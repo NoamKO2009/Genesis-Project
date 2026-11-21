@@ -191,7 +191,7 @@
 
             <div style="overflow-x: auto; width: 100%;" dir="rtl">
                 <asp:GridView ID="GridView1" runat="server" CssClass="grid-view-style" GridLines="None" Width="100%"
-                    AutoGenerateColumns="False" OnRowCommand="GridView1_RowCommand">
+                    AutoGenerateColumns="False" OnRowCommand="GridView1_RowCommand" DataKeyNames="מזהה">
                     <Columns>
                         <asp:BoundField DataField="FlightNumber" HeaderText="מספר טיסה" />
                         <asp:BoundField DataField="Origin" HeaderText="מוצא" />
@@ -212,7 +212,7 @@
 
                 <div style="overflow-x: auto; width: 100%;" dir="rtl">
                     <asp:GridView ID="GridView2" runat="server" CssClass="grid-view-style" GridLines="None" Width="100%"
-                        AutoGenerateColumns="False" OnRowCommand="GridView2_RowCommand">
+                        AutoGenerateColumns="False" OnRowCommand="GridView2_RowCommand" DataKeyNames="מזהה">
                         <Columns>
                             <asp:BoundField DataField="FlightNumber" HeaderText="מספר טיסה" />
                             <asp:BoundField DataField="Origin" HeaderText="מוצא" />

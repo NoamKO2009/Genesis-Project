@@ -72,35 +72,27 @@ namespace NoamProjrct
                 formattedDate = parsedDate.ToString("dd/MM/yyyy");
             }
 
-            try
-            {
-                OleDbConnection Con1 = new OleDbConnection();
-                Con1.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
-                Con1.Open();
+            OleDbConnection Con1 = new OleDbConnection();
+            Con1.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
+            Con1.Open();
 
-                string query = "INSERT INTO Flights (FlightNumber, Origin, Destination, FlightDate, FlightTime, AirplaneModel, TotalSeats, AvailableSeats, Price) VALUES ('" +
-                    txtFlightNumber.Text + "', '" +
-                    ddlOrigin.SelectedValue + "', '" +
-                    ddlDestination.SelectedValue + "', '" +
-                    formattedDate + "', '" +
-                    txtFlightTime.Text + "', '" +
-                    txtAirplaneModel.SelectedValue + "', " +
-                    txtTotalSeats.Text + ", " +
-                    txtTotalSeats.Text + ", " +
-                    txtPrice.Text + ")";
+            string query = "INSERT INTO Flights (FlightNumber, Origin, Destination, FlightDate, FlightTime, AirplaneModel, TotalSeats, AvailableSeats, Price) VALUES ('" +
+                txtFlightNumber.Text + "', '" +
+                ddlOrigin.SelectedValue + "', '" +
+                ddlDestination.SelectedValue + "', '" +
+                formattedDate + "', '" +
+                txtFlightTime.Text + "', '" +
+                txtAirplaneModel.SelectedValue + "', " +
+                txtTotalSeats.Text + ", " +
+                txtTotalSeats.Text + ", " +
+                txtPrice.Text + ")";
 
-                OleDbCommand cmd = new OleDbCommand(query, Con1);
-                cmd.ExecuteNonQuery();
-                Con1.Close();
+            OleDbCommand cmd = new OleDbCommand(query, Con1);
+            cmd.ExecuteNonQuery();
+            Con1.Close();
 
-                lblMsg.ForeColor = System.Drawing.Color.FromArgb(74, 222, 128);
-                lblMsg.Text = "הטיסה נוספה בהצלחה למסד הנתונים!";
-            }
-            catch (Exception ex)
-            {
-                lblMsg.ForeColor = System.Drawing.Color.Red;
-                lblMsg.Text = "שגיאה בהוספת הטיסה: " + ex.Message;
-            }
+            lblMsg.ForeColor = System.Drawing.Color.FromArgb(74, 222, 128);
+            lblMsg.Text = "הטיסה נוספה בהצלחה למסד הנתונים!";
         }
     }
 }

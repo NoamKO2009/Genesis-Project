@@ -185,6 +185,8 @@ namespace NoamProjrct
                 int index = Convert.ToInt32(e.CommandArgument);
                 GridViewRow row = GridView1.Rows[index];
                 string flightNumber = row.Cells[0].Text;
+                // המזהה הייחודי של שורת הטיסה (מספר טיסה יכול לחזור על עצמו בכמה טיסות)
+                string flightId = GridView1.DataKeys[index].Value.ToString();
 
                 string retDateQuery = Request.QueryString["retDate"];
 
@@ -192,13 +194,14 @@ namespace NoamProjrct
                 if (!string.IsNullOrEmpty(retDateQuery))
                 {
                     Session["SelectedOutbound"] = flightNumber;
+                    Session["SelectedOutboundId"] = flightId;
                     lblError.Text = "טיסת הלוך (" + flightNumber + ") נבחרה בהצלחה! כעת בחר טיסת חזור מטבלת טיסות החזור למטה.";
                     lblError.Visible = true;
                 }
                 else
                 {
                     // חיפוש חד-כיווני רגיל - עובר ישר לבחירת מחלקה
-                    Response.Redirect("ChooseClass.aspx?flight=" + flightNumber);
+                    Response.Redirect("ChooseClass.aspx?flight=" + Server.UrlEncode(flightNumber) + "&flightId=" + flightId + "&passengers=" + GetPassengers());
                 }
             }
         }
@@ -208,7 +211,7 @@ namespace NoamProjrct
             if (e.CommandName == "BookFlight")
             {
                 // וידוא שהמשתמש בחר קודם טיסת הלוך
-                if (Session["SelectedOutbound"] == null)
+                if (Session["SelectedOutbound"] == null || Session["SelectedOutboundId"] == null)
                 {
                     lblReturnError.Text = "אנא בחר קודם טיסת הלוך מהטבלה העליונה לפני בחירת טיסת החזור!";
                     lblReturnError.Visible = true;
@@ -218,11 +221,32 @@ namespace NoamProjrct
                 int index = Convert.ToInt32(e.CommandArgument);
                 GridViewRow row = GridView2.Rows[index];
                 string returnFlightNumber = row.Cells[0].Text;
+                string returnFlightId = GridView2.DataKeys[index].Value.ToString();
                 string outboundFlightNumber = Session["SelectedOutbound"].ToString();
+                string outboundFlightId = Session["SelectedOutboundId"].ToString();
 
                 // מעבר לדף בחירת המחלקה עם שתי הטיסות יחד (הלוך וחזור)
-                Response.Redirect("ChooseClass.aspx?flight=" + outboundFlightNumber + "&returnFlight=" + returnFlightNumber);
+                Response.Redirect("ChooseClass.aspx?flight=" + Server.UrlEncode(outboundFlightNumber) + "&flightId=" + outboundFlightId +
+                    "&returnFlight=" + Server.UrlEncode(returnFlightNumber) + "&returnFlightId=" + returnFlightId +
+                    "&passengers=" + GetPassengers());
             }
+        }
+
+        // מספר הנוסעים מהחיפוש (אם לא הוזן מספר - נוסע אחד)
+        private int GetPassengers()
+        {
+            string passengersText = Request.QueryString["passengers"];
+            if (string.IsNullOrEmpty(passengersText))
+            {
+                return 1;
+            }
+
+            int passengers = Convert.ToInt32(passengersText);
+            if (passengers < 1)
+            {
+                return 1;
+            }
+            return passengers;
         }
     }
 }
