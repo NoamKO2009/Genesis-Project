@@ -4,8 +4,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף בחירת מחלקה: Economy / Premium Economy / Business / First Class
     public partial class ChooseClass : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: מציג בראש הדף את מספרי הטיסות שנבחרו (הלוך וחזור).
+        // מאיפה המידע: Session["FlightNumber"] ו-Session["ReturnFlightNumber"] (נשמרו בדף הטיסות).
+        // מטרה: שהמשתמש יראה לאילו טיסות הוא בוחר מחלקה.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -22,7 +27,10 @@ namespace NoamProjrct
             }
         }
 
-        // שמירת המחלקה שנבחרה ומעבר לדף ההזמנה
+        // ===== SelectClass =====
+        // מה עושה: שומרת את המחלקה שנבחרה ב-Session ועוברת לדף ההזמנה.
+        // מאיפה המידע: מקבלת את שם המחלקה מאחד מכפתורי הבחירה (למשל BtnBusiness_Click).
+        // מטרה: פונקציה אחת משותפת לכל ארבעת הכפתורים, כדי לא לכתוב את אותו קוד 4 פעמים.
         private void SelectClass(string flightClass)
         {
             // בדיקה האם המשתמש מחובר למערכת
@@ -36,6 +44,9 @@ namespace NoamProjrct
             Response.Redirect("BookFlight.aspx");
         }
 
+        // ===== כפתורי המחלקות =====
+        // מה עושים: כל כפתור קורא ל-SelectClass עם שם המחלקה שלו.
+        // מאיפה המידע: הלחיצה של המשתמש על הכפתור בדף.
         protected void BtnEconomy_Click(object sender, EventArgs e)
         {
             SelectClass("Economy");

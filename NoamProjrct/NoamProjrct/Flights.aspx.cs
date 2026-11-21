@@ -7,8 +7,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף תוצאות החיפוש: מציג טיסות הלוך וטיסות חזור, והמשתמש בוחר אחת מכל טבלה
     public partial class Flights : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: טוען את טיסות ההלוך לטבלה העליונה ואת טיסות החזור לטבלה התחתונה.
+        // מאיפה המידע: פרטי החיפוש מה-Session (נשמרו בדף הבית), והטיסות מטבלת Flights במסד.
+        // מטרה: להציג למשתמש רק טיסות שמתאימות לחיפוש שלו.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -38,7 +43,7 @@ namespace NoamProjrct
                 Con1.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
                 Con1.Open();
 
-                // 1. טיסות הלוך: מהמוצא ליעד בתאריך היציאה
+                // 1. טיסות הלוך: מהמוצא ליעד בתאריך היציאה, עם מספיק מקומות
                 string sql = "SELECT * FROM Flights WHERE Origin = '" + origin + "' AND Destination = '" + destination +
                     "' AND FlightDate = '" + depDate + "' AND AvailableSeats >= " + passengers;
                 OleDbCommand cmd = new OleDbCommand(sql, Con1);
@@ -92,8 +97,11 @@ namespace NoamProjrct
             }
         }
 
-        // מציאת המזהה של הטיסה לפי הפרטים שמופיעים בשורה בטבלה
-        // (מספר טיסה לבד לא מספיק, כי אותו מספר יכול להופיע בכמה תאריכים)
+        // ===== GetFlightId =====
+        // מה עושה: מוצאת את המספר הייחודי (FlightID) של הטיסה שבשורה שנבחרה בטבלה.
+        // מאיפה המידע: מהתאים של השורה (מספר טיסה, מוצא, יעד, תאריך, שעה) ומטבלת Flights במסד.
+        // מטרה: מספר טיסה לבד לא מספיק (אותו מספר מופיע בכמה תאריכים), וצריך מזהה ייחודי
+        //        כדי שבהזמנה יורדו מקומות רק בטיסה הנכונה.
         private string GetFlightId(GridViewRow row)
         {
             string flightNumber = row.Cells[0].Text;
@@ -106,7 +114,7 @@ namespace NoamProjrct
             Con1.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
             Con1.Open();
 
-            string sql = "SELECT  FROM Flights WHERE FlightNumber = '" + flightNumber + "' AND Origin = '" + origin +
+            string sql = "SELECT FlightID FROM Flights WHERE FlightNumber = '" + flightNumber + "' AND Origin = '" + origin +
                 "' AND Destination = '" + destination + "' AND FlightDate = '" + flightDate + "' AND FlightTime = '" + flightTime + "'";
             OleDbCommand cmd = new OleDbCommand(sql, Con1);
             string flightId = cmd.ExecuteScalar().ToString();
@@ -115,7 +123,10 @@ namespace NoamProjrct
             return flightId;
         }
 
-        // בחירת טיסת הלוך מהטבלה העליונה
+        // ===== GridView1_SelectedIndexChanged =====
+        // מה עושה: רצה כשהמשתמש לוחץ "בחר" בטבלת טיסות ההלוך.
+        // מאיפה המידע: מהשורה שנבחרה בטבלה העליונה (GridView1.SelectedRow).
+        // מטרה: לשמור ב-Session את טיסת ההלוך (מזהה ומספר טיסה) ולבקש לבחור טיסת חזור.
         protected void GridView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             GridViewRow row = GridView1.SelectedRow;
@@ -127,7 +138,10 @@ namespace NoamProjrct
             lblError.Visible = true;
         }
 
-        // בחירת טיסת חזור מהטבלה התחתונה
+        // ===== GridView2_SelectedIndexChanged =====
+        // מה עושה: רצה כשהמשתמש לוחץ "בחר" בטבלת טיסות החזור.
+        // מאיפה המידע: מהשורה שנבחרה בטבלה התחתונה (GridView2.SelectedRow), ומה-Session (טיסת ההלוך).
+        // מטרה: לוודא שכבר נבחרה טיסת הלוך, לשמור ב-Session את טיסת החזור ולעבור לבחירת מחלקה.
         protected void GridView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             // קודם חייבים לבחור טיסת הלוך

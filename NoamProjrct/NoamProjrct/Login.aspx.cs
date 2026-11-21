@@ -8,12 +8,19 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף ההתחברות: בדיקת שם משתמש וסיסמה מול המסד
     public partial class Login : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: כלום - הדף רק מציג טופס התחברות.
         protected void Page_Load(object sender, EventArgs e)
         {
         }
 
+        // ===== BtnLogin_Click =====
+        // מה עושה: סופרת כמה משתמשים יש עם שם המשתמש והסיסמה שהוקלדו. אם יש לפחות אחד - ההתחברות הצליחה.
+        // מאיפה המידע: שדות הטופס (txtUsername, txtPassword) וטבלת Users במסד.
+        // מטרה: לשמור את שם המשתמש ב-Session["LoggedUser"]. כל שאר הדפים בודקים את הערך הזה כדי לדעת מי מחובר.
         protected void BtnLogin_Click(object sender, EventArgs e)
         {
             string connString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
@@ -23,7 +30,7 @@ namespace NoamProjrct
             Con1.Open();
 
             OleDbCommand cmd = new OleDbCommand(query, Con1);
-            int count = (int)cmd.ExecuteScalar();
+            int count = Convert.ToInt32(cmd.ExecuteScalar());
 
             Con1.Close();
 
@@ -39,6 +46,8 @@ namespace NoamProjrct
             }
         }
 
+        // ===== ReturnToHompage_Click =====
+        // מה עושה: חזרה לדף הבית בלי להתחבר.
         protected void ReturnToHompage_Click(object sender, EventArgs e)
         {
             Response.Redirect("HomePage.aspx");

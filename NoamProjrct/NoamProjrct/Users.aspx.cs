@@ -8,8 +8,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף ניהול (למנהל): הצגת המשתמשים וסינון לפי רמת Elite
     public partial class Users : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: ממלא את רשימת רמות ה-Elite לסינון.
+        // מאיפה המידע: טבלת MyEliteTier במסד.
+        // מטרה: שהמנהל יוכל לבחור רמה ולראות רק את המשתמשים שלה.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -33,6 +38,10 @@ namespace NoamProjrct
             }
         }
 
+        // ===== Button1_Click =====
+        // מה עושה: מציגה בטבלה את כל המשתמשים.
+        // מאיפה המידע: טבלת Users במסד.
+        // מטרה: כפתור "רענן נתונים" - לראות את כל המשתמשים בלי סינון.
         protected void Button1_Click(object sender, EventArgs e)
         {
             OleDbConnection Con1 = new OleDbConnection();
@@ -51,6 +60,10 @@ namespace NoamProjrct
             Con1.Close();
         }
 
+        // ===== ShowCities_OnSelectedIndexChanged =====
+        // מה עושה: מציגה רק את המשתמשים ברמת ה-Elite שנבחרה ברשימה.
+        // מאיפה המידע: הרמה שנבחרה (ShowTier.SelectedValue) וטבלת Users.
+        // מטרה: סינון משתמשים לפי רמה.
         protected void ShowCities_OnSelectedIndexChanged(object sender, EventArgs e)
         {
             OleDbConnection Con1 = new OleDbConnection();

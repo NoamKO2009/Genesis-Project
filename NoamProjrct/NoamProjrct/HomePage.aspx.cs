@@ -4,8 +4,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף הבית: ברכה למשתמש, טופס חיפוש טיסות וכפתורי ניהול למנהל
     public partial class HomePage : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: מציג או מסתיר כפתורים לפי מצב המשתמש (אורח / מחובר / מנהל) וטוען את רשימות המוצא והיעד.
+        // מאיפה המידע: Session["LoggedUser"] (נשמר בדף ההתחברות), ופונקציות IsUserAdmin ו-LoadUserStats.
+        // מטרה: שכל משתמש יראה רק את מה שמתאים לו.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -50,7 +55,10 @@ namespace NoamProjrct
             }
         }
 
-        // שליפת רמת Elite ונקודות של המשתמש המחובר
+        // ===== LoadUserStats =====
+        // מה עושה: שולפת את רמת ה-Elite ואת כמות הנקודות של המשתמש ומציגה אותן בראש הדף.
+        // מאיפה המידע: שם המשתמש מ-Session["LoggedUser"], והנתונים מטבלת Users במסד.
+        // מטרה: להראות למשתמש כמה נקודות צבר מההזמנות שלו.
         private void LoadUserStats()
         {
             string username = Session["LoggedUser"].ToString();
@@ -75,7 +83,10 @@ namespace NoamProjrct
             pnlUserStats.Visible = true;
         }
 
-        // בדיקה האם המשתמש המחובר הוא מנהל
+        // ===== IsUserAdmin =====
+        // מה עושה: בודקת האם המשתמש המחובר הוא מנהל. מחזירה true או false.
+        // מאיפה המידע: שם המשתמש מ-Session["LoggedUser"], והעמודה MyIsAdmin בטבלת Users.
+        // מטרה: להציג את כפתורי הניהול (הוספת טיסה, משתמשים, הזמנות) רק למנהל.
         public bool IsUserAdmin()
         {
             if (Session["LoggedUser"] == null)
@@ -109,6 +120,10 @@ namespace NoamProjrct
             return isAdmin;
         }
 
+        // ===== LoadDropdowns =====
+        // מה עושה: ממלאת את רשימות המוצא והיעד בטופס החיפוש.
+        // מאיפה המידע: טבלת OriginDestination במסד.
+        // מטרה: שהמשתמש יבחר עיר מרשימה ולא יקליד אותה (כך אין שגיאות כתיב).
         private void LoadDropdowns()
         {
             OleDbConnection Con1 = new OleDbConnection();
@@ -143,6 +158,10 @@ namespace NoamProjrct
             ddlDestination.Items.Insert(0, new ListItem("בחר יעד...", "0"));
         }
 
+        // ===== BtnSearch_Click =====
+        // מה עושה: רצה בלחיצה על "חפש טיסות". בודקת את הטופס, שומרת את החיפוש ב-Session ועוברת לדף הטיסות.
+        // מאיפה המידע: מהשדות בטופס (מוצא, יעד, תאריכים, נוסעים).
+        // מטרה: להעביר את פרטי החיפוש לדף Flights.aspx.
         protected void BtnSearch_Click(object sender, EventArgs e)
         {
             string origin = ddlOrigin.SelectedValue;
@@ -176,7 +195,10 @@ namespace NoamProjrct
             Response.Redirect("Flights.aspx");
         }
 
-        // בדיקת פרטי החיפוש. מחזירה הודעת שגיאה, או טקסט ריק אם הכול תקין
+        // ===== CheckSearch =====
+        // מה עושה: בודקת את פרטי החיפוש אחד אחרי השני. מחזירה הודעת שגיאה, או טקסט ריק אם הכול תקין.
+        // מאיפה המידע: מקבלת את הערכים מ-BtnSearch_Click (שלקחה אותם מהטופס).
+        // מטרה: לא לאפשר חיפוש עם שדות ריקים או לא הגיוניים.
         private string CheckSearch(string origin, string destination, string depDate, string retDate, string passengers)
         {
             if (origin == "0")
@@ -219,7 +241,10 @@ namespace NoamProjrct
             return "";
         }
 
-        // בדיקה שהטקסט מכיל רק ספרות
+        // ===== IsNumber =====
+        // מה עושה: עוברת בלולאה על כל תו בטקסט ובודקת שהוא ספרה (0-9). מחזירה true או false.
+        // מאיפה המידע: מקבלת את הטקסט מ-CheckSearch (שדה מספר הנוסעים).
+        // מטרה: לוודא שהוזן מספר לפני שממירים אותו עם Convert.ToInt32.
         private bool IsNumber(string text)
         {
             if (text == "")
@@ -238,6 +263,9 @@ namespace NoamProjrct
             return true;
         }
 
+        // ===== כפתורי ניווט =====
+        // מה עושים: כל כפתור מעביר לדף אחר באתר.
+        // מטרה: ניווט בין הדפים (התחברות, הרשמה, עדכון פרטים, דפי ניהול).
         protected void BtnLogin_Click(object sender, EventArgs e)
         {
             Response.Redirect("Login.aspx");
@@ -268,6 +296,9 @@ namespace NoamProjrct
             Response.Redirect("Bookings.aspx");
         }
 
+        // ===== BtnLogout_Click =====
+        // מה עושה: מוחקת את כל ה-Session (המשתמש ופרטי החיפוש) וחוזרת לדף הבית.
+        // מטרה: התנתקות מהאתר.
         protected void BtnLogout_Click(object sender, EventArgs e)
         {
             Session.Clear();

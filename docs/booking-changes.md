@@ -92,9 +92,9 @@ protected void GridView1_SelectedIndexChanged(object sender, EventArgs e)
 }
 ```
 
-**למה צריך `GetFlightId`?** מספר טיסה (למשל `LY-209`) מופיע בכמה תאריכים. לכן מחפשים במסד את ה-`מזהה` לפי כל הפרטים שבשורה – מספר טיסה, מוצא, יעד, תאריך ושעה:
+**למה צריך `GetFlightId`?** מספר טיסה (למשל `LY-209`) מופיע בכמה תאריכים. לכן מחפשים במסד את ה-`FlightID` (מספר ייחודי לכל טיסה) לפי כל הפרטים שבשורה – מספר טיסה, מוצא, יעד, תאריך ושעה:
 ```csharp
-string sql = "SELECT [מזהה] FROM Flights WHERE FlightNumber = '" + flightNumber + "' AND Origin = '" + origin +
+string sql = "SELECT FlightID FROM Flights WHERE FlightNumber = '" + flightNumber + "' AND Origin = '" + origin +
     "' AND Destination = '" + destination + "' AND FlightDate = '" + flightDate + "' AND FlightTime = '" + flightTime + "'";
 ```
 
@@ -160,7 +160,7 @@ return pricePoints + classBonus;
 
 ### הורדת מקומות
 ```csharp
-string sqlSeats = "UPDATE Flights SET AvailableSeats = AvailableSeats - " + passengers + " WHERE [מזהה] = " + flightId;
+string sqlSeats = "UPDATE Flights SET AvailableSeats = AvailableSeats - " + passengers + " WHERE FlightID = " + flightId;
 ```
 
 ---
@@ -170,8 +170,8 @@ string sqlSeats = "UPDATE Flights SET AvailableSeats = AvailableSeats - " + pass
 **למה משתמשים ב-Session ולא בכתובת הדף?**
 Session שומר את המידע בצד השרת לכל משתמש. כך לא צריך להעביר פרטים בכתובת, והמשתמש לא יכול לשנות אותם ידנית.
 
-**למה משתמשים ב-`מזהה` ולא ב-`FlightNumber`?**
-מספר טיסה לא ייחודי – אותו `LY-209` מופיע בכמה תאריכים. `מזהה` הוא מספר אוטומטי שונה לכל שורה, ולכן העדכון פוגע רק בטיסה שנבחרה.
+**למה משתמשים ב-`FlightID` ולא ב-`FlightNumber`?**
+מספר טיסה לא ייחודי – אותו `LY-209` מופיע בכמה תאריכים. `FlightID` הוא מספר אוטומטי (AutoNumber) שונה לכל שורה, ולכן העדכון פוגע רק בטיסה שנבחרה.
 
 **איך יודעים שאין מספיק מקומות?**
 `HasEnoughSeats` שולפת את `AvailableSeats` ומשווה למספר הנוסעים.

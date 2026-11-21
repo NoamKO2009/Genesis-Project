@@ -8,8 +8,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף ניהול (למנהל): הצגת כל ההזמנות וסינון לפי משתמש
     public partial class Bookings : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: ממלא את רשימת שמות המשתמשים שביצעו הזמנות.
+        // מאיפה המידע: העמודה MyUsername בטבלת Bookings (DISTINCT - כל שם פעם אחת).
+        // מטרה: שהמנהל יוכל לבחור משתמש ולראות את ההזמנות שלו.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -32,6 +37,10 @@ namespace NoamProjrct
             }
         }
 
+        // ===== BtnShowAll_Click =====
+        // מה עושה: מציגה בטבלה את כל ההזמנות.
+        // מאיפה המידע: טבלת Bookings במסד (כולל מספר נוסעים ונקודות).
+        // מטרה: לראות את כל ההזמנות באתר.
         protected void BtnShowAll_Click(object sender, EventArgs e)
         {
             OleDbConnection Con1 = new OleDbConnection();
@@ -49,6 +58,10 @@ namespace NoamProjrct
             Con1.Close();
         }
 
+        // ===== ShowUsers_OnSelectedIndexChanged =====
+        // מה עושה: מציגה רק את ההזמנות של המשתמש שנבחר ברשימה.
+        // מאיפה המידע: המשתמש שנבחר (ShowUsers.SelectedValue) וטבלת Bookings.
+        // מטרה: סינון הזמנות לפי משתמש.
         protected void ShowUsers_OnSelectedIndexChanged(object sender, EventArgs e)
         {
             OleDbConnection Con1 = new OleDbConnection();

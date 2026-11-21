@@ -7,8 +7,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף ניהול (למנהל): הוספת טיסה חדשה לטבלת Flights
     public partial class AddFlight : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: ממלא את הרשימות הנפתחות - מוצא, יעד וסוג מטוס.
+        // מאיפה המידע: טבלאות OriginDestination ו-AircraftType במסד.
+        // מטרה: שהמנהל יבחר ערכים מרשימה ולא יקליד אותם.
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -54,11 +59,15 @@ namespace NoamProjrct
             }
         }
 
+        // ===== BtnInsert_Click =====
+        // מה עושה: בודקת שכל השדות מולאו, ומוסיפה טיסה חדשה לטבלת Flights.
+        // מאיפה המידע: שדות הטופס (מספר טיסה, מוצא, יעד, תאריך, שעה, מטוס, מקומות, מחיר).
+        // מטרה: הוספת טיסה. בטיסה חדשה המקומות הפנויים (AvailableSeats) שווים לכל המקומות (TotalSeats).
         protected void BtnInsert_Click(object sender, EventArgs e)
         {
             // בדיקה שכל השדות נבחרו ומולאו כראוי לפני שליחה למסד הנתונים
             if (ddlOrigin.SelectedValue == "0" || ddlDestination.SelectedValue == "0" || txtAirplaneModel.SelectedValue == "0" ||
-                string.IsNullOrEmpty(txtFlightNumber.Text) || string.IsNullOrEmpty(txtTotalSeats.Text) || string.IsNullOrEmpty(txtPrice.Text))
+                txtFlightNumber.Text == "" || txtTotalSeats.Text == "" || txtPrice.Text == "")
             {
                 lblMsg.ForeColor = System.Drawing.Color.Red;
                 lblMsg.Text = "שגיאה: אנא מלא את כל השדות ובחר ערכים תקינים מהרשימות!";

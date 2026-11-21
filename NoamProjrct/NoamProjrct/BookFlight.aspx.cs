@@ -7,8 +7,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף אישור ההזמנה: מציג את הטיסות, מקבל שם וטלפון של הנוסע ושומר את ההזמנה במסד
     public partial class BookFlight : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: בודק שהמשתמש מחובר ושנבחרו טיסות ומחלקה, ומציג את פרטי שתי הטיסות.
+        // מאיפה המידע: Session (המשתמש, הטיסות, המחלקה ומספר הנוסעים) וטבלת Flights במסד.
+        // מטרה: שהמשתמש יראה מה הוא מזמין לפני שהוא מאשר.
         protected void Page_Load(object sender, EventArgs e)
         {
             // רק משתמש מחובר יכול להזמין טיסה
@@ -52,10 +57,13 @@ namespace NoamProjrct
             }
         }
 
-        // מחזיר טקסט עם פרטי הטיסה לפי המזהה שלה
+        // ===== GetFlightDetails =====
+        // מה עושה: מחזירה טקסט עם פרטי טיסה אחת (מספר, מוצא, יעד, תאריך, מחיר, מקומות).
+        // מאיפה המידע: מקבלת את מזהה הטיסה, ושולפת את הפרטים מטבלת Flights.
+        // מטרה: להציג את פרטי הטיסה בדף ההזמנה.
         private string GetFlightDetails(OleDbConnection Con1, string flightId)
         {
-            string sql = "SELECT * FROM Flights WHERE [מזהה] = " + flightId;
+            string sql = "SELECT * FROM Flights WHERE FlightID =" + flightId;
             OleDbCommand cmd = new OleDbCommand(sql, Con1);
             OleDbDataReader Dr = cmd.ExecuteReader();
 
@@ -74,16 +82,22 @@ namespace NoamProjrct
             return details;
         }
 
-        // מספר הנוסעים שנשמר בחיפוש בדף הבית
+        // ===== GetPassengers =====
+        // מה עושה: מחזירה את מספר הנוסעים כמספר שלם.
+        // מאיפה המידע: Session["Passengers"] (נשמר בחיפוש בדף הבית).
+        // מטרה: להשתמש במספר הנוסעים בבדיקת מקומות, בהורדת מקומות ובחישוב נקודות.
         private int GetPassengers()
         {
             return Convert.ToInt32(Session["Passengers"]);
         }
 
-        // בדיקה האם יש בטיסה מספיק מקומות פנויים
+        // ===== HasEnoughSeats =====
+        // מה עושה: בודקת אם בטיסה יש מספיק מקומות פנויים למספר הנוסעים. מחזירה true או false.
+        // מאיפה המידע: מקבלת מזהה טיסה ומספר נוסעים, ושולפת את AvailableSeats מטבלת Flights.
+        // מטרה: לא לאפשר הזמנה של יותר נוסעים ממה שיש מקום בטיסה.
         private bool HasEnoughSeats(OleDbConnection Con1, string flightId, int passengers)
         {
-            string sql = "SELECT AvailableSeats FROM Flights WHERE [מזהה] = " + flightId;
+            string sql = "SELECT AvailableSeats FROM Flights WHERE FlightID =" + flightId;
             OleDbCommand cmd = new OleDbCommand(sql, Con1);
             int availableSeats = Convert.ToInt32(cmd.ExecuteScalar());
 
@@ -94,7 +108,10 @@ namespace NoamProjrct
             return false;
         }
 
-        // בונוס נקודות לפי המחלקה (כמו שכתוב בדף בחירת המחלקה)
+        // ===== GetClassBonus =====
+        // מה עושה: מחזירה את בונוס הנקודות של המחלקה (2000 / 3000 / 5000 / 8000).
+        // מאיפה המידע: מקבלת את שם המחלקה. הסכומים הם כמו שכתוב בדף בחירת המחלקה.
+        // מטרה: חלק מחישוב הנקודות בפונקציה CalculatePoints.
         private int GetClassBonus(string flightClass)
         {
             if (flightClass == "Economy")
@@ -116,7 +133,10 @@ namespace NoamProjrct
             return 0;
         }
 
-        // חישוב הנקודות להזמנה: כל דולר ששולם = 5 נקודות, ועוד בונוס המחלקה
+        // ===== CalculatePoints =====
+        // מה עושה: מחשבת כמה נקודות שווה הזמנה של טיסה אחת: מחיר × נוסעים × 5, ועוד בונוס המחלקה.
+        // מאיפה המידע: מקבלת מחיר (מטבלת Flights), מספר נוסעים ומחלקה (מה-Session).
+        // מטרה: לדעת כמה נקודות להוסיף למשתמש ולשמור בהזמנה.
         private int CalculatePoints(int price, int passengers, string flightClass)
         {
             int totalPrice = price * passengers;
@@ -125,11 +145,14 @@ namespace NoamProjrct
             return pricePoints + classBonus;
         }
 
-        // הזמנת טיסה אחת: הורדת מקומות + שמירת ההזמנה. מחזיר את כמות הנקודות שנצברו
+        // ===== BookOneFlight =====
+        // מה עושה: מזמינה טיסה אחת: מורידה מקומות ב-Flights ומוסיפה שורה ל-Bookings. מחזירה את הנקודות שנצברו.
+        // מאיפה המידע: מזהה טיסה, נוסעים ומחלקה (מה-Session), שם וטלפון מהטופס, מחיר ומספר טיסה מטבלת Flights.
+        // מטרה: נקראת פעמיים - פעם לטיסת ההלוך ופעם לטיסת החזור.
         private int BookOneFlight(OleDbConnection Con1, string flightId, int passengers, string flightClass)
         {
             // שליפת מספר הטיסה והמחיר שלה
-            string sqlFlight = "SELECT FlightNumber, Price FROM Flights WHERE [מזהה] = " + flightId;
+            string sqlFlight = "SELECT FlightNumber, Price FROM Flights WHERE FlightID =" + flightId;
             OleDbCommand cmdFlight = new OleDbCommand(sqlFlight, Con1);
             OleDbDataReader Dr = cmdFlight.ExecuteReader();
             Dr.Read();
@@ -138,7 +161,7 @@ namespace NoamProjrct
             Dr.Close();
 
             // הורדת מספר הנוסעים מהמקומות הפנויים
-            string sqlSeats = "UPDATE Flights SET AvailableSeats = AvailableSeats - " + passengers + " WHERE [מזהה] = " + flightId;
+            string sqlSeats = "UPDATE Flights SET AvailableSeats = AvailableSeats - " + passengers + " WHERE FlightID =" + flightId;
             OleDbCommand cmdSeats = new OleDbCommand(sqlSeats, Con1);
             cmdSeats.ExecuteNonQuery();
 
@@ -164,7 +187,10 @@ namespace NoamProjrct
             return points;
         }
 
-        // הוספת נקודות למשתמש בטבלת Users
+        // ===== AddPointsToUser =====
+        // מה עושה: מוסיפה נקודות לחשבון המשתמש: שולפת את הנקודות הנוכחיות, מחברת ושומרת.
+        // מאיפה המידע: שם המשתמש מ-Session["LoggedUser"], והנקודות הנוכחיות מטבלת Users.
+        // מטרה: שהנקודות יופיעו בדף הבית ליד Elite Points.
         private void AddPointsToUser(OleDbConnection Con1, int points)
         {
             string username = Session["LoggedUser"].ToString();
@@ -188,6 +214,10 @@ namespace NoamProjrct
             cmdUpdate.ExecuteNonQuery();
         }
 
+        // ===== BtnConfirmBooking_Click =====
+        // מה עושה: רצה בלחיצה על "אישור וביצוע הזמנה". בודקת פרטים ומקומות, מזמינה את שתי הטיסות ומוסיפה נקודות.
+        // מאיפה המידע: Session (טיסות, מחלקה, נוסעים) ושדות הטופס (שם וטלפון של הנוסע).
+        // מטרה: לבצע את ההזמנה ולשמור הכול במסד הנתונים.
         protected void BtnConfirmBooking_Click(object sender, EventArgs e)
         {
             string flightId = Session["FlightId"].ToString();

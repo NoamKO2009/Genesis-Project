@@ -8,8 +8,13 @@ using System.Web.UI.WebControls;
 
 namespace NoamProjrct
 {
+    // דף עדכון פרטים: שינוי שם משתמש, סיסמה ואימייל
     public partial class Update : System.Web.UI.Page
     {
+        // ===== Page_Load =====
+        // מה עושה: ממלא את שדות "הפרטים הקיימים" (שם משתמש, סיסמה, אימייל) של המשתמש המחובר.
+        // מאיפה המידע: שם המשתמש מ-Session["LoggedUser"], והפרטים מטבלת Users.
+        // מטרה: שהמשתמש יראה את הפרטים הנוכחיים שלו לפני שהוא משנה אותם.
         protected void Page_Load(object sender, EventArgs e)
         {
             // בודקים שזו הטעינה הראשונה של הדף (ולא לחיצה על כפתור)
@@ -51,6 +56,10 @@ namespace NoamProjrct
             }
         }
 
+        // ===== Updatebutton =====
+        // מה עושה: מעדכנת בטבלת Users את שם המשתמש, הסיסמה והאימייל. שדה חדש שנשאר ריק - נשאר הערך הקיים.
+        // מאיפה המידע: שדות הפרטים הקיימים (לזיהוי) ושדות הפרטים החדשים בטופס.
+        // מטרה: לשמור את הפרטים החדשים, ולעדכן את Session["LoggedUser"] אם שם המשתמש השתנה.
         protected void Updatebutton(object sender, EventArgs e)
         {
             OleDbConnection Con1 = new OleDbConnection();
