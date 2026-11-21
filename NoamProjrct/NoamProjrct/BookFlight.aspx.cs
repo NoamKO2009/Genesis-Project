@@ -24,10 +24,8 @@ namespace NoamProjrct
                 txtUsername.Text = Session["LoggedUser"].ToString();
                 txtUsername.ReadOnly = true;
 
-                string flightId = Request.QueryString["flightId"];
-                string returnFlightId = Request.QueryString["returnFlightId"];
-
-                if (string.IsNullOrEmpty(flightId))
+                // בדיקה שנבחרו טיסת הלוך, טיסת חזור ומחלקה
+                if (Session["FlightId"] == null || Session["ReturnFlightId"] == null || Session["FlightClass"] == null)
                 {
                     lblError.Text = "שגיאה: לא נבחרה טיסה להזמנה.";
                     lblError.Visible = true;
@@ -35,22 +33,22 @@ namespace NoamProjrct
                     return;
                 }
 
+                string flightId = Session["FlightId"].ToString();
+                string returnFlightId = Session["ReturnFlightId"].ToString();
+
                 OleDbConnection Con1 = new OleDbConnection();
                 Con1.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
                 Con1.Open();
 
-                // פרטי טיסת ההלוך
+                // הצגת פרטי טיסת ההלוך וטיסת החזור
                 string details = GetFlightDetails(Con1, flightId);
-
-                // פרטי טיסת החזור (אם נבחרה)
-                if (!string.IsNullOrEmpty(returnFlightId))
-                {
-                    details = details + "<br />טיסת חזור: " + GetFlightDetails(Con1, returnFlightId);
-                }
+                details = details + "<br />טיסת חזור: " + GetFlightDetails(Con1, returnFlightId);
 
                 Con1.Close();
 
-                lblFlightDetails.Text = details + "<br />מספר נוסעים: <b>" + GetPassengers() + "</b>";
+                lblFlightDetails.Text = details +
+                    "<br />מחלקה: <b>" + Session["FlightClass"].ToString() + "</b>" +
+                    " | מספר נוסעים: <b>" + GetPassengers() + "</b>";
             }
         }
 
@@ -76,21 +74,10 @@ namespace NoamProjrct
             return details;
         }
 
-        // מספר הנוסעים מהחיפוש (אם לא הוזן מספר - נוסע אחד)
+        // מספר הנוסעים שנשמר בחיפוש בדף הבית
         private int GetPassengers()
         {
-            string passengersText = Request.QueryString["passengers"];
-            if (string.IsNullOrEmpty(passengersText))
-            {
-                return 1;
-            }
-
-            int passengers = Convert.ToInt32(passengersText);
-            if (passengers < 1)
-            {
-                return 1;
-            }
-            return passengers;
+            return Convert.ToInt32(Session["Passengers"]);
         }
 
         // בדיקה האם יש בטיסה מספיק מקומות פנויים
@@ -203,9 +190,9 @@ namespace NoamProjrct
 
         protected void BtnConfirmBooking_Click(object sender, EventArgs e)
         {
-            string flightId = Request.QueryString["flightId"];
-            string returnFlightId = Request.QueryString["returnFlightId"];
-            string flightClass = Request.QueryString["class"];
+            string flightId = Session["FlightId"].ToString();
+            string returnFlightId = Session["ReturnFlightId"].ToString();
+            string flightClass = Session["FlightClass"].ToString();
             int passengers = GetPassengers();
 
             // בדיקה שמולאו פרטי הנוסע
@@ -229,33 +216,29 @@ namespace NoamProjrct
                 return;
             }
 
-            // בדיקה שיש מספיק מקומות בטיסת החזור (אם נבחרה)
-            if (!string.IsNullOrEmpty(returnFlightId))
+            // בדיקה שיש מספיק מקומות בטיסת החזור
+            if (!HasEnoughSeats(Con1, returnFlightId, passengers))
             {
-                if (!HasEnoughSeats(Con1, returnFlightId, passengers))
-                {
-                    Con1.Close();
-                    lblError.Text = "אין מספיק מקומות פנויים בטיסת החזור עבור " + passengers + " נוסעים.";
-                    lblError.Visible = true;
-                    return;
-                }
+                Con1.Close();
+                lblError.Text = "אין מספיק מקומות פנויים בטיסת החזור עבור " + passengers + " נוסעים.";
+                lblError.Visible = true;
+                return;
             }
 
-            // הזמנת טיסת ההלוך
+            // הזמנת טיסת ההלוך וטיסת החזור, וסכימת הנקודות
             int totalPoints = BookOneFlight(Con1, flightId, passengers, flightClass);
-
-            // הזמנת טיסת החזור (אם נבחרה)
-            if (!string.IsNullOrEmpty(returnFlightId))
-            {
-                totalPoints = totalPoints + BookOneFlight(Con1, returnFlightId, passengers, flightClass);
-            }
+            totalPoints = totalPoints + BookOneFlight(Con1, returnFlightId, passengers, flightClass);
 
             // הוספת כל הנקודות לחשבון המשתמש
             AddPointsToUser(Con1, totalPoints);
 
             Con1.Close();
 
-            // ההזמנה בוצעה - חזרה לדף הבית
+            // ההזמנה בוצעה - מוחקים את הטיסות שנבחרו כדי שלא יוזמנו פעמיים
+            Session["FlightId"] = null;
+            Session["ReturnFlightId"] = null;
+            Session["FlightClass"] = null;
+
             Response.Redirect("HomePage.aspx");
         }
     }

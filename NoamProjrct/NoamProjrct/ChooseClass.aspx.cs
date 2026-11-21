@@ -10,50 +10,50 @@ namespace NoamProjrct
         {
             if (!IsPostBack)
             {
-                string flightNum = Request.QueryString["flight"];
-                if (!string.IsNullOrEmpty(flightNum))
+                // הצגת הטיסות שנבחרו בדף הטיסות
+                if (Session["FlightNumber"] != null && Session["ReturnFlightNumber"] != null)
                 {
-                    lblFlightNum.Text = Server.HtmlEncode(flightNum);
-
-                    // בהזמנת הלוך-חזור מציגים גם את טיסת החזור
-                    string returnFlightNum = Request.QueryString["returnFlight"];
-                    if (!string.IsNullOrEmpty(returnFlightNum))
-                    {
-                        lblFlightNum.Text += " | טיסת חזור: " + Server.HtmlEncode(returnFlightNum);
-                    }
+                    lblFlightNum.Text = Session["FlightNumber"].ToString() + " | טיסת חזור: " + Session["ReturnFlightNumber"].ToString();
                 }
                 else
                 {
-                    lblFlightNum.Text = "No flight selected";
+                    lblFlightNum.Text = "לא נבחרה טיסה";
                 }
             }
         }
 
-        protected void BtnSelectClass_Click(object sender, EventArgs e)
+        // שמירת המחלקה שנבחרה ומעבר לדף ההזמנה
+        private void SelectClass(string flightClass)
         {
-            // בדיקה האם המשתמש מחובר למערכת (דף ההתחברות שומר את המשתמש ב-LoggedUser)
+            // בדיקה האם המשתמש מחובר למערכת
             if (Session["LoggedUser"] == null)
             {
                 Response.Redirect("Login.aspx");
                 return;
             }
 
-            Button btn = (Button)sender;
-            string selectedClass = btn.CommandArgument;
+            Session["FlightClass"] = flightClass;
+            Response.Redirect("BookFlight.aspx");
+        }
 
-            // מעבירים הלאה את כל פרטי הטיסה (כולל טיסת חזור ומספר נוסעים) לדף ההזמנה
-            string url = "BookFlight.aspx?flight=" + Server.UrlEncode(Request.QueryString["flight"]) +
-                "&flightId=" + Server.UrlEncode(Request.QueryString["flightId"]) +
-                "&passengers=" + Server.UrlEncode(Request.QueryString["passengers"]) +
-                "&class=" + Server.UrlEncode(selectedClass);
+        protected void BtnEconomy_Click(object sender, EventArgs e)
+        {
+            SelectClass("Economy");
+        }
 
-            if (!string.IsNullOrEmpty(Request.QueryString["returnFlightId"]))
-            {
-                url += "&returnFlight=" + Server.UrlEncode(Request.QueryString["returnFlight"]) +
-                    "&returnFlightId=" + Server.UrlEncode(Request.QueryString["returnFlightId"]);
-            }
+        protected void BtnPremium_Click(object sender, EventArgs e)
+        {
+            SelectClass("Premium Economy");
+        }
 
-            Response.Redirect(url);
+        protected void BtnBusiness_Click(object sender, EventArgs e)
+        {
+            SelectClass("Business");
+        }
+
+        protected void BtnFirst_Click(object sender, EventArgs e)
+        {
+            SelectClass("First Class");
         }
     }
 }

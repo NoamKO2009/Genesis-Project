@@ -97,6 +97,9 @@
                     </div>
                 </div>
 
+                <!-- הודעת שגיאה כשלא מולאו כל פרטי החיפוש -->
+                <asp:Label ID="lblSearchError" runat="server" CssClass="login-required-msg" Visible="false" Style="display: block;"></asp:Label>
+
                 <!-- הודעה שתוצג לאורחים בלבד -->
                 <asp:Panel ID="pnlLoginRequired" runat="server" Visible="false" CssClass="login-required-msg">
                     עליך <a href="Login.aspx">להתחבר למערכת</a> על מנת לחפש ולהזמין טיסות.

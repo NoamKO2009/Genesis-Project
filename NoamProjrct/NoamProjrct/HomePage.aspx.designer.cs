@@ -150,6 +150,15 @@ namespace NoamProjrct
         protected global::System.Web.UI.WebControls.Button BtnSearch;
 
         /// <summary>
+        /// lblSearchError control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblSearchError;
+
+        /// <summary>
         /// pnlLoginRequired control.
         /// </summary>
         /// <remarks>

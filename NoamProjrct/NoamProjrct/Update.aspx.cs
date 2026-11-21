@@ -24,7 +24,7 @@ namespace NoamProjrct
                     Con1.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
                     Con1.Open();
 
-                    // שולפים רק את המשתמש הנוכחי שמחובר לפי השם ששמרנו ב-Session
+                    // שולפים את המשתמש הנוכחי שמחובר לפי השם ששמרנו ב-Session
                     string sqlstring = "SELECT * FROM Users WHERE Username = '" + loggedUser + "'";
                     OleDbCommand cmd = new OleDbCommand(sqlstring, Con1);
 
@@ -32,12 +32,12 @@ namespace NoamProjrct
 
                     if (Dr.Read()) // אם נמצאה רשומה למשתמש
                     {
-                        // מכניסים את הערכים מתוך מסד הנתונים ישירות לתוך תיבות הטקסט בדף
+                        // מכניסים את הערכים הקיימים לתיבות הטקסט המיועדות לזיהוי / הצגה
                         up4.Text = Dr["Username"].ToString();
                         up5.Text = Dr["MyPassword"].ToString();
 
-                        // הערה: ודא ששם עמודת הטלפון במסד הנתונים שלך תואם לשם כאן (למשל Phone או Tel)
-                        // up6.Text = Dr["Phone"].ToString(); 
+                        // האימייל הקיים מוצג בתיבה של הפרטים הקיימים (העמודה במסד נקראת MyEmail)
+                        upOldEmail.Text = Dr["MyEmail"].ToString();
                     }
 
                     Dr.Close();
@@ -51,14 +51,33 @@ namespace NoamProjrct
             }
         }
 
-
         protected void Updatebutton(object sender, EventArgs e)
         {
             OleDbConnection Con1 = new OleDbConnection();
             Con1.ConnectionString = @"Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + Server.MapPath("") + "\\usersdb.accdb";
             Con1.Open();
 
-            string sqlstring = "UPDATE Users SET UserName = '" + up1.Text + "', MyPassword = '" + up2.Text + "' WHERE UserName = '" + up4.Text + "' AND MyPassword = '" + up5.Text + "';";
+            // שדה חדש שנשאר ריק - משאירים את הערך הקיים
+            string newUsername = up1.Text;
+            if (newUsername == "")
+            {
+                newUsername = up4.Text;
+            }
+
+            string newPassword = up2.Text;
+            if (newPassword == "")
+            {
+                newPassword = up5.Text;
+            }
+
+            string newEmail = upEmail.Text;
+            if (newEmail == "")
+            {
+                newEmail = upOldEmail.Text;
+            }
+
+            // עדכון שם משתמש, אימייל וסיסמה במסד הנתונים
+            string sqlstring = "UPDATE Users SET UserName = '" + newUsername + "', MyEmail = '" + newEmail + "', MyPassword = '" + newPassword + "' WHERE UserName = '" + up4.Text + "' AND MyPassword = '" + up5.Text + "';";
 
             OleDbCommand cmd = new OleDbCommand(sqlstring, Con1);
             int y = cmd.ExecuteNonQuery();
@@ -67,15 +86,15 @@ namespace NoamProjrct
 
             if (y > 0)
             {
-                // אם שם המשתמש עודכן בהצלחה, נעדכן גם את ה-Session שלא ייזרק החוצה
-                Session["LoggedUser"] = up1.Text;
+                // אם העדכון הצליח, נעדכן גם את ה-Session לשם החדש
+                Session["LoggedUser"] = newUsername;
 
                 // הודעת הצלחה ומעבר לדף הבית
-                Response.Write("<script>alert('הפרטים עודכנו בהצלחה!'); window.location='HomePage.aspx';</script>");
+                Response.Write("<script>alert('הפרטים (שם משתמש, אימייל וסיסמה) עודכנו בהצלחה!'); window.location='HomePage.aspx';</script>");
             }
             else
             {
-                Response.Write("<שגיאה: פרטי הזיהוי הנוכחיים שגויים או שהעדכון נכשל>");
+                Response.Write("<script>alert('שגיאה: פרטי הזיהוי הנוכחיים שגויים או שהעדכון נכשל');</script>");
             }
         }
     }

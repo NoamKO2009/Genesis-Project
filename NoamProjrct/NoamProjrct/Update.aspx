@@ -4,7 +4,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Genesis Airways - עדכון פרטי משתמש</title>
-    <!-- ייבוא פונטים יוקרתיים ואלגנטיים מ-Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Playfair+Display:wght@500;700&family=Assistant:wght@300;400;600;700&display=swap" rel="stylesheet" />
     <style>
         * {
@@ -71,7 +70,7 @@
             letter-spacing: 0.5px;
         }
 
-        input[type="text"], input[type="password"] {
+        input[type="text"], input[type="password"], input[type="email"] {
             width: 100%;
             padding: 13px 15px;
             background-color: #1e293b;
@@ -84,7 +83,7 @@
             transition: border-color 0.3s;
         }
 
-        input[type="text"]:focus, input[type="password"]:focus {
+        input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
             border-color: #d4af37;
         }
 
@@ -133,11 +132,11 @@
             display: inline-block;
         }
 
-        .btn-top:hover {
-            border-color: #ffffff;
-            color: #ffffff;
-            background-color: rgba(203, 213, 225, 0.1);
-        }
+            .btn-top:hover {
+                border-color: #ffffff;
+                color: #ffffff;
+                background-color: rgba(203, 213, 225, 0.1);
+            }
 
         .back-container {
             margin-top: 35px;
@@ -151,6 +150,7 @@
             <div class="brand-title">GENESIS AIRWAYS</div>
             <h2 class="update-title">✏️ עדכון פרטי משתמש</h2>
 
+            <!-- פרטים נוכחיים לצורך אימות -->
             <div class="form-group">
                 <label>שם משתמש קיים:</label>
                 <asp:TextBox ID="up4" runat="server" placeholder="הכנס שם משתמש נוכחי"></asp:TextBox>
@@ -161,8 +161,14 @@
                 <asp:TextBox ID="up5" runat="server" TextMode="Password" placeholder="הכנס סיסמה נוכחית"></asp:TextBox>
             </div>
 
+            <div class="form-group">
+                <label>אימייל קיים:</label>
+                <asp:TextBox ID="upOldEmail" runat="server" ReadOnly="true"></asp:TextBox>
+            </div>
+
             <hr style="border: 0; border-top: 1px solid #334155; margin: 25px 0;" />
 
+            <!-- פרטים חדשים לעדכון -->
             <div class="form-group">
                 <label>שם משתמש חדש:</label>
                 <asp:TextBox ID="up1" runat="server" placeholder="הכנס שם משתמש חדש"></asp:TextBox>
@@ -171,6 +177,11 @@
             <div class="form-group">
                 <label>סיסמה חדשה:</label>
                 <asp:TextBox ID="up2" runat="server" TextMode="Password" placeholder="הכנס סיסמה חדשה"></asp:TextBox>
+            </div>
+
+            <div class="form-group">
+                <label>אימייל חדש:</label>
+                <asp:TextBox ID="upEmail" runat="server" TextMode="Email" placeholder="הכנס אימייל חדש"></asp:TextBox>
             </div>
 
             <asp:Button ID="Button1" runat="server" Text="עדכן פרטים" CssClass="btn-submit" OnClick="Updatebutton" />

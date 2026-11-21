@@ -1,201 +1,192 @@
-# הסבר השינויים: הזמנת טיסה, מקומות פנויים, נוסעים ונקודות
+# הסבר תהליך הזמנת הטיסה
 
-## מה המטרה
-כשמשתמש מחובר מחפש טיסה ומזמין אותה:
-1. מספר המקומות הפנויים (`AvailableSeats`) בטבלת `Flights` יורד במספר הנוסעים שהזמין.
-2. בהזמנה נשמרים מספר הנוסעים (`Passengers`) וכמות הנקודות שנצברו (`Points`).
-3. הנקודות מתווספות למשתמש בטבלת `Users` (עמודה `MyElitePoints`), ומופיעות בדף הבית.
-4. אם אין מספיק מקומות – ההזמנה נדחית ושום דבר לא נשמר.
+## מה האתר עושה
+1. משתמש מחובר ממלא חיפוש: מוצא, יעד, תאריך יציאה, תאריך חזרה ומספר נוסעים. אי אפשר לחפש בלי למלא הכול.
+2. בוחר טיסת הלוך וטיסת חזור.
+3. בוחר מחלקה.
+4. ממלא שם וטלפון ומאשר.
+5. אחרי האישור:
+   - המקומות הפנויים (`AvailableSeats`) בשתי הטיסות יורדים לפי מספר הנוסעים.
+   - נשמרות שתי הזמנות בטבלת `Bookings` (אחת לכל טיסה), כולל מספר נוסעים ונקודות.
+   - הנקודות מתווספות למשתמש בטבלת `Users` ומופיעות בדף הבית.
 
-## המסלול של ההזמנה באתר
+## איך המידע עובר בין הדפים: Session
+כל הפרטים נשמרים ב-**Session** – "זיכרון" של האתר לכל משתמש, שנשאר בזמן שהוא עובר בין דפים.
+
+| דף | מה הוא שומר ב-Session |
+|---|---|
+| `HomePage` (חיפוש) | `Origin`, `Destination`, `DepDate`, `RetDate`, `Passengers` |
+| `Flights` (בחירת טיסות) | `FlightId`, `FlightNumber`, `ReturnFlightId`, `ReturnFlightNumber` |
+| `ChooseClass` (בחירת מחלקה) | `FlightClass` |
+| `BookFlight` (אישור) | קורא את כל מה שלמעלה, ובסוף מוחק את הטיסות שנבחרו |
+
 ```
-HomePage.aspx  (חיפוש: מוצא, יעד, תאריכים, מספר נוסעים)
-     |  Flights.aspx?origin=...&passengers=3
-     v
-Flights.aspx   (בחירת טיסה; שולח את המזהה של הטיסה + מספר נוסעים)
-     |  ChooseClass.aspx?flight=LY-001&flightId=1&passengers=3
-     v
-ChooseClass.aspx (בחירת מחלקה; בודק שהמשתמש מחובר ומעביר הלאה את הכול)
-     |  BookFlight.aspx?flight=LY-001&flightId=1&passengers=3&class=Business
-     v
-BookFlight.aspx  (פרטי נוסע -> אישור: בדיקת מקומות, הורדת מקומות, שמירת הזמנה, הוספת נקודות)
+HomePage.aspx ──> Flights.aspx ──> ChooseClass.aspx ──> BookFlight.aspx ──> HomePage.aspx
+   (חיפוש)       (הלוך + חזור)       (מחלקה)             (אישור)
 ```
-בהזמנת הלוך-חזור נוספים לכתובת גם `returnFlight` ו-`returnFlightId`.
+
+כפתור "חזרה לרשימת הטיסות" פשוט מוביל ל-`Flights.aspx`, והדף טוען שוב את החיפוש מה-Session.
 
 ---
 
-## שינוי 1: מסד הנתונים
+## מסד הנתונים
 נוספו שתי עמודות לטבלת `Bookings`:
 
 | עמודה | סוג | משמעות |
 |---|---|---|
 | `Passengers` | מספר | כמה נוסעים הוזמנו |
-| `Points` | מספר | כמה נקודות המשתמש צבר בהזמנה הזו |
-
-בהזמנות הישנות שהיו לפני השינוי: `Passengers = 1`, `Points = 0`.
+| `Points` | מספר | כמה נקודות נצברו בהזמנה הזו |
 
 ---
 
-## שינוי 2: `Flights.aspx` – מזהה ייחודי של טיסה
-
-**הבעיה:** מספר טיסה (למשל `LY-209`) מופיע בכמה שורות שונות (תאריכים וקווים שונים).
-אם היינו מעדכנים לפי `FlightNumber`, המקומות היו יורדים בכל השורות האלה.
-
-**הפתרון:** לטבלה (GridView) הוספנו `DataKeyNames="מזהה"` – כך כל שורה "זוכרת" את המזהה הייחודי שלה מהמסד:
-```aspx
-<asp:GridView ID="GridView1" runat="server" ... OnRowCommand="GridView1_RowCommand" DataKeyNames="מזהה">
-```
-
-כשלוחצים "הזמן" (`Flights.aspx.cs`):
-```csharp
-int index = Convert.ToInt32(e.CommandArgument);              // מספר השורה שנלחצה
-GridViewRow row = GridView1.Rows[index];
-string flightNumber = row.Cells[0].Text;                      // מספר הטיסה (להצגה)
-string flightId = GridView1.DataKeys[index].Value.ToString(); // המזהה הייחודי
-
-Response.Redirect("ChooseClass.aspx?flight=" + Server.UrlEncode(flightNumber) +
-                  "&flightId=" + flightId + "&passengers=" + GetPassengers());
-```
-
----
-
-## שינוי 3: `ChooseClass.aspx.cs` – תיקון בדיקת התחברות
-
-**באג שתוקן:** הדף בדק `Session["Username"]`, אבל דף ההתחברות שומר `Session["LoggedUser"]`.
-לכן כל משתמש נזרק לדף ההתחברות ואף אחד לא הצליח להזמין.
+## HomePage.aspx.cs – בדיקת החיפוש
+הפונקציה `CheckSearch` בודקת את השדות אחד אחרי השני. בבעיה הראשונה היא מחזירה הודעת שגיאה. אם הכול תקין – היא מחזירה טקסט ריק.
 
 ```csharp
-if (Session["LoggedUser"] == null)
+if (origin == "0")      return "אנא בחר מוצא.";
+if (destination == "0") return "אנא בחר יעד.";
+if (origin == destination) return "המוצא והיעד לא יכולים להיות אותה עיר.";
+if (depDate == "")      return "אנא בחר תאריך יציאה.";
+if (retDate == "")      return "אנא בחר תאריך חזרה.";
+if (Convert.ToDateTime(retDate) < Convert.ToDateTime(depDate)) return "תאריך החזרה חייב להיות אחרי תאריך היציאה.";
+if (!IsNumber(passengers)) return "אנא הזן מספר נוסעים (מספר בלבד).";
+...
+return "";
+```
+
+הפונקציה `IsNumber` עוברת בלולאה על כל תו ובודקת שהוא ספרה:
+```csharp
+for (int i = 0; i < text.Length; i++)
 {
-    Response.Redirect("Login.aspx");
-    return;
+    if (text[i] < '0' || text[i] > '9')
+    {
+        return false;
+    }
+}
+return true;
+```
+
+אם הכול תקין – שומרים ב-Session ועוברים לדף הטיסות:
+```csharp
+Session["Origin"] = origin;
+Session["DepDate"] = Convert.ToDateTime(depDate).ToString("dd/MM/yyyy");
+...
+Response.Redirect("Flights.aspx");
+```
+
+---
+
+## Flights.aspx.cs – בחירת טיסות
+- אם המשתמש לא מחובר → `Login.aspx`. אם לא היה חיפוש → `HomePage.aspx`.
+- מציגים שתי טבלאות: הלוך (מוצא → יעד) וחזור (יעד → מוצא).
+- אם אין טיסה בתאריך שנבחר – מציגים את כל הטיסות באותו קו.
+
+בכל שורה בטבלה יש כפתור "בחר" (`CommandName="Select"`). לחיצה עליו מפעילה את `SelectedIndexChanged`, ואת השורה שנבחרה מקבלים עם `GridView1.SelectedRow`:
+
+```csharp
+protected void GridView1_SelectedIndexChanged(object sender, EventArgs e)
+{
+    GridViewRow row = GridView1.SelectedRow;
+    Session["FlightId"] = GetFlightId(row);
+    Session["FlightNumber"] = row.Cells[0].Text;
 }
 ```
-בנוסף הדף מעביר הלאה לדף ההזמנה את מזהה הטיסה, טיסת החזור ומספר הנוסעים.
+
+**למה צריך `GetFlightId`?** מספר טיסה (למשל `LY-209`) מופיע בכמה תאריכים. לכן מחפשים במסד את ה-`מזהה` לפי כל הפרטים שבשורה – מספר טיסה, מוצא, יעד, תאריך ושעה:
+```csharp
+string sql = "SELECT [מזהה] FROM Flights WHERE FlightNumber = '" + flightNumber + "' AND Origin = '" + origin +
+    "' AND Destination = '" + destination + "' AND FlightDate = '" + flightDate + "' AND FlightTime = '" + flightTime + "'";
+```
+
+בטבלת החזור, אם עוד לא נבחרה טיסת הלוך – מציגים הודעה. אחרת שומרים את טיסת החזור ועוברים ל-`ChooseClass.aspx`.
 
 ---
 
-## שינוי 4: `BookFlight.aspx.cs` – הלב של השינוי
+## ChooseClass.aspx.cs – בחירת מחלקה
+לכל כפתור יש פונקציה משלו, וכולן קוראות לאותה פונקציה עם שם המחלקה:
+```csharp
+protected void BtnBusiness_Click(object sender, EventArgs e)
+{
+    SelectClass("Business");
+}
 
-הקוד מחולק לפונקציות קטנות, כל אחת עושה דבר אחד:
+private void SelectClass(string flightClass)
+{
+    if (Session["LoggedUser"] == null) { Response.Redirect("Login.aspx"); return; }
+    Session["FlightClass"] = flightClass;
+    Response.Redirect("BookFlight.aspx");
+}
+```
+
+---
+
+## BookFlight.aspx.cs – אישור ההזמנה
 
 | פונקציה | מה היא עושה |
 |---|---|
-| `GetPassengers()` | קוראת את מספר הנוסעים מהכתובת (אם אין – 1) |
-| `GetFlightDetails(...)` | מחזירה טקסט עם פרטי הטיסה להצגה בדף |
-| `HasEnoughSeats(...)` | בודקת אם בטיסה יש מספיק מקומות פנויים |
-| `GetClassBonus(...)` | מחזירה את בונוס הנקודות של המחלקה |
-| `CalculatePoints(...)` | מחשבת כמה נקודות שווה ההזמנה |
-| `BookOneFlight(...)` | מזמינה טיסה אחת: מורידה מקומות ושומרת הזמנה. מחזירה את הנקודות |
-| `AddPointsToUser(...)` | מוסיפה את הנקודות לחשבון המשתמש |
+| `GetFlightDetails` | מחזירה טקסט עם פרטי הטיסה להצגה בדף |
+| `GetPassengers` | מחזירה את מספר הנוסעים מה-Session |
+| `HasEnoughSeats` | בודקת אם בטיסה יש מספיק מקומות פנויים |
+| `GetClassBonus` | מחזירה את בונוס הנקודות של המחלקה |
+| `CalculatePoints` | מחשבת כמה נקודות שווה ההזמנה |
+| `BookOneFlight` | מזמינה טיסה אחת: מורידה מקומות ושומרת הזמנה. מחזירה את הנקודות |
+| `AddPointsToUser` | מוסיפה את הנקודות לחשבון המשתמש |
 
-### בדיקת מקומות
-```csharp
-private bool HasEnoughSeats(OleDbConnection Con1, string flightId, int passengers)
-{
-    string sql = "SELECT AvailableSeats FROM Flights WHERE [מזהה] = " + flightId;
-    OleDbCommand cmd = new OleDbCommand(sql, Con1);
-    int availableSeats = Convert.ToInt32(cmd.ExecuteScalar());
-
-    if (availableSeats >= passengers)
-    {
-        return true;
-    }
-    return false;
-}
-```
+### סדר הפעולות בלחיצה על "אישור"
+1. בדיקה שמולאו שם נוסע וטלפון.
+2. `HasEnoughSeats` לטיסת ההלוך ולטיסת החזור. אם אין מקום – הודעה ויציאה. **הבדיקה של שתי הטיסות נעשית לפני שמזמינים משהו**, כך שלא יקרה שבהלוך ירדו מקומות ובחזור לא.
+3. `BookOneFlight` להלוך ולחזור, וסוכמים את הנקודות.
+4. `AddPointsToUser` עם סך הנקודות.
+5. מוחקים מה-Session את הטיסות שנבחרו (כדי שלא יוזמנו פעמיים) ועוברים לדף הבית.
 
 ### חישוב נקודות
 **כל דולר ששולם = 5 נקודות, ועוד בונוס לפי המחלקה.**
 
-```csharp
-private int GetClassBonus(string flightClass)
-{
-    if (flightClass == "Economy")          return 2000;
-    if (flightClass == "Premium Economy")  return 3000;
-    if (flightClass == "Business")         return 5000;
-    if (flightClass == "First Class")      return 8000;
-    return 0;
-}
+| מחלקה | בונוס |
+|---|---|
+| Economy | 2,000 |
+| Premium Economy | 3,000 |
+| Business | 5,000 |
+| First Class | 8,000 |
 
-private int CalculatePoints(int price, int passengers, string flightClass)
-{
-    int totalPrice = price * passengers;       // כמה שולם בסך הכול
-    int pricePoints = totalPrice * 5;          // 5 נקודות לכל דולר
-    int classBonus = GetClassBonus(flightClass);
-    return pricePoints + classBonus;
-}
+```csharp
+int totalPrice = price * passengers;   // כמה שולם
+int pricePoints = totalPrice * 5;      // 5 נקודות לכל דולר
+int classBonus = GetClassBonus(flightClass);
+return pricePoints + classBonus;
 ```
 
-**דוגמה:** טיסה ב-350$, 2 נוסעים, Business:
-350 × 2 = 700$ → 700 × 5 = 3,500 נקודות + 5,000 בונוס = **8,500 נקודות**.
+**דוגמה:** LY-001 ב-350$, 2 נוסעים, Business: 350 × 2 × 5 = 3,500 + 5,000 = **8,500 נקודות**.
 
-### הזמנת טיסה אחת
+### הורדת מקומות
 ```csharp
-private int BookOneFlight(OleDbConnection Con1, string flightId, int passengers, string flightClass)
-{
-    // 1. שליפת מספר הטיסה והמחיר
-    // 2. הורדת המקומות:
-    string sqlSeats = "UPDATE Flights SET AvailableSeats = AvailableSeats - " + passengers + " WHERE [מזהה] = " + flightId;
-    // 3. חישוב נקודות: CalculatePoints(price, passengers, flightClass)
-    // 4. שמירת ההזמנה בטבלת Bookings (כולל Passengers ו-Points)
-    // 5. החזרת כמות הנקודות
-}
+string sqlSeats = "UPDATE Flights SET AvailableSeats = AvailableSeats - " + passengers + " WHERE [מזהה] = " + flightId;
 ```
-
-### הוספת נקודות למשתמש
-```csharp
-private void AddPointsToUser(OleDbConnection Con1, int points)
-{
-    // שליפת הנקודות הנוכחיות -> חיבור הנקודות החדשות -> שמירה
-    int newPoints = currentPoints + points;
-    string sqlUpdate = "UPDATE Users SET MyElitePoints = '" + newPoints + "' WHERE Username = '" + username + "'";
-}
-```
-
-### לחיצה על "אישור וביצוע הזמנה"
-סדר הפעולות:
-1. בדיקה שמולאו שם נוסע וטלפון.
-2. בדיקה שיש מספיק מקומות בטיסת ההלוך (ובטיסת החזור אם יש). אם אין – הודעת שגיאה ויציאה.
-3. `BookOneFlight` להלוך (ולחזור אם יש) – סוכמים את הנקודות.
-4. `AddPointsToUser` – מוסיפים את סך הנקודות למשתמש.
-5. מעבר לדף הבית.
-
-הבדיקה של **שתי** הטיסות נעשית **לפני** שמזמינים משהו – כך שאם בחזור אין מקום, לא יורדים מקומות גם בהלוך.
 
 ---
 
 ## שאלות שעלולים לשאול אותך
 
+**למה משתמשים ב-Session ולא בכתובת הדף?**
+Session שומר את המידע בצד השרת לכל משתמש. כך לא צריך להעביר פרטים בכתובת, והמשתמש לא יכול לשנות אותם ידנית.
+
 **למה משתמשים ב-`מזהה` ולא ב-`FlightNumber`?**
-כי מספר טיסה לא ייחודי – אותו `LY-209` מופיע בכמה תאריכים. `מזהה` הוא מספר אוטומטי (AutoNumber) שונה לכל שורה, ולכן העדכון פוגע רק בטיסה שנבחרה.
+מספר טיסה לא ייחודי – אותו `LY-209` מופיע בכמה תאריכים. `מזהה` הוא מספר אוטומטי שונה לכל שורה, ולכן העדכון פוגע רק בטיסה שנבחרה.
 
-**מאיפה מגיע מספר הנוסעים?**
-מהשדה "נוסעים" בדף הבית. הוא עובר בכתובת (QueryString) מדף לדף: `Flights` → `ChooseClass` → `BookFlight`. אם הוא ריק – ברירת המחדל היא 1.
+**איך יודעים שאין מספיק מקומות?**
+`HasEnoughSeats` שולפת את `AvailableSeats` ומשווה למספר הנוסעים.
 
-**איך מחושבות הנקודות?**
-מחיר × נוסעים × 5, ועוד בונוס המחלקה (2,000 / 3,000 / 5,000 / 8,000 – כמו שכתוב בדף בחירת המחלקה). בונוס המחלקה ניתן פעם אחת לכל טיסה.
+**מה קורה אם לוחצים "אישור" פעמיים?**
+אחרי הזמנה מוחקים את הטיסות מה-Session, אז בכניסה חוזרת לדף מופיעה הודעה "לא נבחרה טיסה להזמנה".
 
 **איפה רואים את הנקודות?**
-בטבלת `Bookings` (עמודה `Points` – כמה נצבר בכל הזמנה), ובדף הבית ליד "Elite Points" (סך הכול של המשתמש מטבלת `Users`).
+בטבלת `Bookings` (עמודה `Points`) ובדף הבית ליד "Elite Points".
 
-**מה קורה בהלוך-חזור?**
-נשמרות שתי הזמנות (שורה לכל טיסה), בשתיהן יורדים מקומות, וכל טיסה נותנת נקודות משלה.
-
-**למה הורדנו את ה-try/catch בדף AddFlight?**
-כדי שהקוד יהיה פשוט ואחיד בכל הפרויקט. במקום לתפוס שגיאות, הדף בודק מראש עם `if` שכל השדות מולאו.
-
-## בדיקות שבוצעו
-| בדיקה | תוצאה |
+## בדיקה שבוצעה
+| שלב | תוצאה |
 |---|---|
-| הזמנת 500 נוסעים | נדחתה: "אין מספיק מקומות פנויים בטיסת ההלוך" – שום דבר לא השתנה |
-| הלוך-חזור LY-001 (350$) + LY-031 (500$), 2 נוסעים, Business | מקומות: 146→144 ו-236→234 |
-| | נקודות בהזמנות: 8,500 ו-10,000 |
-| | נקודות המשתמש: 18,500 |
-
-## קבצים ששונו
-- `UsersDB.accdb` – עמודות חדשות `Passengers` ו-`Points` בטבלת `Bookings`
-- `Flights.aspx`, `Flights.aspx.cs`
-- `ChooseClass.aspx.cs`
-- `BookFlight.aspx.cs`
-- `AddFlight.aspx.cs` – הוסר try/catch
+| חיפוש עם "abc" בנוסעים | "אנא הזן מספר נוסעים (מספר בלבד)." |
+| חיפוש תל אביב ↔ לונדון, 2 נוסעים | שתי טבלאות: LY-001 הלוך, LY-031 חזור |
+| חזרה לרשימת הטיסות מדף המחלקות | חוזר לאותן תוצאות |
+| הזמנת Business | מקומות: 146→144, 236→234. נקודות: 8,500 + 10,000 = 18,500 |
+| כניסה שוב לדף ההזמנה אחרי ההזמנה | "שגיאה: לא נבחרה טיסה להזמנה." |

@@ -182,7 +182,6 @@
 
             <div class="controls-row">
                 <a href="HomePage.aspx" class="btn-action">← חזור לדף הבית לחיפוש חדש</a>
-                <asp:Button ID="Button1" runat="server" OnClick="Button1_Click" Text="הצג את כל הטיסות" CssClass="btn-action" />
             </div>
 
             <!-- חלק 1: טיסות הלוך -->
@@ -191,7 +190,7 @@
 
             <div style="overflow-x: auto; width: 100%;" dir="rtl">
                 <asp:GridView ID="GridView1" runat="server" CssClass="grid-view-style" GridLines="None" Width="100%"
-                    AutoGenerateColumns="False" OnRowCommand="GridView1_RowCommand" DataKeyNames="מזהה">
+                    AutoGenerateColumns="False" OnSelectedIndexChanged="GridView1_SelectedIndexChanged">
                     <Columns>
                         <asp:BoundField DataField="FlightNumber" HeaderText="מספר טיסה" />
                         <asp:BoundField DataField="Origin" HeaderText="מוצא" />
@@ -200,7 +199,7 @@
                         <asp:BoundField DataField="FlightTime" HeaderText="שעה" />
                         <asp:BoundField DataField="Price" HeaderText="מחיר ($)" />
                         <asp:BoundField DataField="AvailableSeats" HeaderText="מקומות פנויים" />
-                        <asp:ButtonField ButtonType="Button" CommandName="BookFlight" Text="הזמן" ControlStyle-CssClass="btn-action" />
+                        <asp:ButtonField ButtonType="Button" CommandName="Select" Text="בחר" ControlStyle-CssClass="btn-action" />
                     </Columns>
                 </asp:GridView>
             </div>
@@ -212,7 +211,7 @@
 
                 <div style="overflow-x: auto; width: 100%;" dir="rtl">
                     <asp:GridView ID="GridView2" runat="server" CssClass="grid-view-style" GridLines="None" Width="100%"
-                        AutoGenerateColumns="False" OnRowCommand="GridView2_RowCommand" DataKeyNames="מזהה">
+                        AutoGenerateColumns="False" OnSelectedIndexChanged="GridView2_SelectedIndexChanged">
                         <Columns>
                             <asp:BoundField DataField="FlightNumber" HeaderText="מספר טיסה" />
                             <asp:BoundField DataField="Origin" HeaderText="מוצא" />
@@ -221,7 +220,7 @@
                             <asp:BoundField DataField="FlightTime" HeaderText="שעה" />
                             <asp:BoundField DataField="Price" HeaderText="מחיר ($)" />
                             <asp:BoundField DataField="AvailableSeats" HeaderText="מקומות פנויים" />
-                            <asp:ButtonField ButtonType="Button" CommandName="BookFlight" Text="הזמן" ControlStyle-CssClass="btn-action" />
+                            <asp:ButtonField ButtonType="Button" CommandName="Select" Text="בחר" ControlStyle-CssClass="btn-action" />
                         </Columns>
                     </asp:GridView>
                 </div>

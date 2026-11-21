@@ -67,9 +67,9 @@ namespace NoamProjrct
 
             // המרת התאריך לפורמט ישראלי (DD/MM/YYYY)
             string formattedDate = txtFlightDate.Text;
-            if (DateTime.TryParse(txtFlightDate.Text, out DateTime parsedDate))
+            if (txtFlightDate.Text != "")
             {
-                formattedDate = parsedDate.ToString("dd/MM/yyyy");
+                formattedDate = Convert.ToDateTime(txtFlightDate.Text).ToString("dd/MM/yyyy");
             }
 
             OleDbConnection Con1 = new OleDbConnection();

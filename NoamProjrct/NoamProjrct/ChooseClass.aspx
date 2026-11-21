@@ -195,7 +195,7 @@
                             <li>צבּיר 2,000 נקודות מועדון</li>
                         </ul>
                     </div>
-                    <asp:Button ID="BtnEconomy" runat="server" Text="בחר Economy" CssClass="btn-select-class" OnClick="BtnSelectClass_Click" CommandArgument="Economy" />
+                    <asp:Button ID="BtnEconomy" runat="server" Text="בחר Economy" CssClass="btn-select-class" OnClick="BtnEconomy_Click" />
                 </div>
 
                 <!-- מחלקה 2: Premium Economy (מומלץ) -->
@@ -213,7 +213,7 @@
                             <li>צבּיר 3,000 נקודות מועדון</li>
                         </ul>
                     </div>
-                    <asp:Button ID="BtnPremium" runat="server" Text="בחר Premium Economy" CssClass="btn-select-class" OnClick="BtnSelectClass_Click" CommandArgument="Premium Economy" />
+                    <asp:Button ID="BtnPremium" runat="server" Text="בחר Premium Economy" CssClass="btn-select-class" OnClick="BtnPremium_Click" />
                 </div>
 
                 <!-- מחלקה 3: Business -->
@@ -230,7 +230,7 @@
                             <li>צבּיר 5,000 נקודות מועדון</li>
                         </ul>
                     </div>
-                    <asp:Button ID="BtnBusiness" runat="server" Text="בחר Business" CssClass="btn-select-class" OnClick="BtnSelectClass_Click" CommandArgument="Business" />
+                    <asp:Button ID="BtnBusiness" runat="server" Text="בחר Business" CssClass="btn-select-class" OnClick="BtnBusiness_Click" />
                 </div>
 
                 <!-- מחלקה 4: First Class -->
@@ -247,7 +247,7 @@
                             <li>צבּיר 8,000 נקודות מועדון</li>
                         </ul>
                     </div>
-                    <asp:Button ID="BtnFirst" runat="server" Text="בחר First Class" CssClass="btn-select-class" OnClick="BtnSelectClass_Click" CommandArgument="First Class" />
+                    <asp:Button ID="BtnFirst" runat="server" Text="בחר First Class" CssClass="btn-select-class" OnClick="BtnFirst_Click" />
                 </div>
 
             </div>
