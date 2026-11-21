@@ -1,0 +1,253 @@
+﻿
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Assistant', sans-serif;
+    background-color: #0b0f19;
+    color: #ffffff;
+    direction: rtl;
+    text-align: right;
+    margin: 0;
+    padding: 40px;
+}
+
+/* מכולה ראשית המותאמת לרוחב מלא של המסך */
+.page-container {
+    width: 100%;
+    max-width: 100%; /* הוגדר לרוחב מלא */
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* כותרת העמוד */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 35px;
+    border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+    padding-bottom: 20px;
+}
+
+.page-title {
+    font-family: 'Cinzel', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: #d4af37;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+/* כפתור חזרה */
+.btn-back {
+    background: transparent;
+    border: 2px solid rgba(203, 213, 225, 0.6);
+    color: #e2e8f0;
+    padding: 10px 22px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-back:hover {
+        background: rgba(203, 213, 225, 0.15);
+        border-color: #ffffff;
+        color: #ffffff;
+    }
+
+/* אזור פקדים (סינון וכפתורים) */
+.controls-card {
+    background: rgba(15, 23, 42, 0.97);
+    border: 2px solid rgba(212, 175, 55, 0.6);
+    border-radius: 16px;
+    padding: 25px 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.field-label {
+    font-size: 14px;
+    color: #cbd5e1;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* עיצוב כפתורים רגילים */
+.styled-button {
+    background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+    color: #0b0f19;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: bold;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+    transition: transform 0.2s, opacity 0.2s;
+    height: 48px;
+}
+
+    .styled-button:hover {
+        opacity: 0.95;
+        transform: translateY(-2px);
+    }
+
+/* עיצוב טבלת הנתונים (GridView) מורחבת על כל המסך */
+.grid-container {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.97);
+    border: 2px solid rgba(212, 175, 55, 0.4);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9);
+}
+
+.styled-grid {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: right;
+    font-family: 'Assistant', sans-serif;
+}
+
+    .styled-grid th {
+        background-color: #1e293b;
+        color: #d4af37;
+        font-family: 'Cinzel', serif;
+        font-size: 15px;
+        padding: 16px 20px;
+        border-bottom: 2px solid #d4af37;
+        letter-spacing: 1px;
+    }
+
+    .styled-grid td {
+        padding: 14px 20px;
+        border-bottom: 1px solid #334155;
+        color: #e2e8f0;
+        font-size: 15px;
+    }
+
+    .styled-grid tr:hover {
+        background-color: rgba(30, 41, 59, 0.6);
+    }
+
+    .styled-grid tr:last-child td {
+        border-bottom: none;
+    }
+
+/* ===== עיצוב רשימות נגללות (Base-Select) לעמוד ניהול משתמשים ===== */
+@supports (appearance: base-select) {
+    select,
+    select::picker(select) {
+        appearance: base-select;
+    }
+}
+
+.styled-dropdown {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Assistant', sans-serif;
+    outline: none;
+    min-width: 220px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(145deg, #1e293b 0%, #162032 100%) !important;
+    border: 2px solid #334155;
+    color: white;
+    transition: border-color 0.3s;
+}
+
+    .styled-dropdown:hover {
+        border-color: rgba(212, 175, 55, 0.7);
+    }
+
+    .styled-dropdown:focus,
+    .styled-dropdown:open {
+        border-color: #d4af37 !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+    }
+
+    .styled-dropdown::picker-icon {
+        color: #d4af37;
+        transition: rotate 0.3s;
+    }
+
+    .styled-dropdown:open::picker-icon {
+        rotate: 180deg;
+    }
+
+    .styled-dropdown::picker(select) {
+        margin-top: 8px;
+        padding: 6px;
+        max-height: 240px;
+        background: #0f172a;
+        border: 2px solid rgba(212, 175, 55, 0.7);
+        border-radius: 14px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
+        scrollbar-width: thin;
+        scrollbar-color: #d4af37 transparent;
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: opacity 0.25s, transform 0.25s, display 0.25s allow-discrete, overlay 0.25s allow-discrete;
+    }
+
+    .styled-dropdown:open::picker(select) {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+@starting-style {
+    .styled-dropdown:open::picker(select) {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+}
+
+.styled-dropdown option {
+    padding: 11px 14px;
+    border-radius: 9px;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+    .styled-dropdown option::checkmark {
+        display: none;
+    }
+
+    .styled-dropdown option:hover,
+    .styled-dropdown option:focus {
+        background: linear-gradient(90deg, rgba(212,175,55,0.25), rgba(212,175,55,0.08));
+        color: #d4af37;
+    }
+
+    .styled-dropdown option:checked {
+        background: rgba(212, 175, 55, 0.18);
+        color: #d4af37;
+        font-weight: 700;
+    }
+
+

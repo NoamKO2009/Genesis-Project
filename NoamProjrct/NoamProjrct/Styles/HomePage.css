@@ -1,0 +1,387 @@
+﻿* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Assistant', sans-serif;
+    background-color: #0b0f19;
+    color: #ffffff;
+    direction: rtl;
+    text-align: right;
+    margin: 0;
+    padding: 45px;
+}
+
+.page-container {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* פס עליון */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+    padding: 0 5px;
+}
+
+.welcome-msg {
+    font-size: 20px;
+    color: #e2e8f0;
+    font-weight: 600;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 0.5px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+/* עיצוב יוקרתי לכפתורי ההתחברות וההרשמה */
+.btn-auth {
+    background: transparent;
+    border: 2px solid rgba(203, 213, 225, 0.6);
+    color: #e2e8f0;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+    .btn-auth:hover {
+        background: rgba(203, 213, 225, 0.15);
+        border-color: #ffffff;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+
+/* כפתור התנתקות מעודן */
+.btn-logout {
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid rgba(248, 113, 113, 0.6);
+    color: #fca5a5;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1.5px;
+    transition: all 0.3s ease;
+}
+
+    .btn-logout:hover {
+        background: #ef4444;
+        border-color: #ef4444;
+        color: #ffffff;
+    }
+
+/* נתוני משתמש (Elite Tier ונקודות) */
+.user-stats {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 8px;
+}
+
+.stat-chip {
+    background: rgba(212, 175, 55, 0.1);
+    border: 1.5px solid rgba(212, 175, 55, 0.6);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 14px;
+    color: #e2e8f0;
+}
+
+    .stat-chip b {
+        color: #d4af37;
+        font-family: 'Cinzel', serif;
+        letter-spacing: 1px;
+    }
+
+/* לוגו בצד ימין למעלה שמשתלב חלק עם הרקע */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.brand-logo {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+    .brand-logo:hover {
+        transform: scale(1.06);
+        opacity: 0.9;
+    }
+
+/* באנר ראשי מוגדל */
+.hero-banner {
+    position: relative;
+    width: 100%;
+    height: 480px;
+    border-radius: 24px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #1e293b;
+    margin-top: 20px;
+}
+
+    .hero-banner img.bg-img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.45);
+        z-index: 1;
+    }
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 22px;
+}
+
+.brand-title {
+    font-family: 'Cinzel', serif;
+    font-size: 52px;
+    font-weight: 900;
+    letter-spacing: 6px;
+    color: #ffffff;
+    margin: 0 0 12px 0;
+    text-shadow: 0 3px 15px rgba(0,0,0,0.95);
+}
+
+.hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    color: #cbd5e1;
+    font-size: 20px;
+    font-style: italic;
+    margin: 0;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.95);
+}
+
+/* קופסת הזמנת טיסה חופפת */
+.booking-card {
+    max-width: 1140px;
+    margin: -70px auto 0 auto;
+    position: relative;
+    z-index: 10;
+    background: rgba(15, 23, 42, 0.97);
+    backdrop-filter: blur(16px);
+    border: 2.5px solid rgba(212, 175, 55, 0.85);
+    border-radius: 22px;
+    padding: 46px 42px;
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.95);
+}
+
+.booking-title {
+    font-family: 'Cinzel', serif;
+    color: #d4af37;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 26px;
+    letter-spacing: 2px;
+}
+
+.search-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 18px;
+    align-items: flex-end;
+}
+
+@media (max-width: 1000px) {
+    .search-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.field-label {
+    font-size: 15px;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+    text-align: right;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ===== עיצוב רשימות נגללות (Base-Select) עם פתיחה כלפי מטה בלבד ===== */
+@supports (appearance: base-select) {
+    select,
+    select::picker(select) {
+        appearance: base-select;
+    }
+}
+
+.search-box-select {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: 'Assistant', sans-serif;
+    outline: none;
+    width: 100%;
+    height: 52px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(145deg, #1e293b 0%, #162032 100%) !important;
+    border: 2px solid #334155;
+    color: white;
+    transition: border-color 0.3s;
+}
+
+    .search-box-select:hover {
+        border-color: rgba(212, 175, 55, 0.7);
+    }
+
+    .search-box-select:focus,
+    .search-box-select:open {
+        border-color: #d4af37 !important;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.18);
+    }
+
+    .search-box-select::picker-icon {
+        color: #d4af37;
+        transition: rotate 0.3s;
+    }
+
+    .search-box-select:open::picker-icon {
+        rotate: 180deg;
+    }
+
+    .search-box-select::picker(select) {
+        direction: rtl;
+        margin-top: 8px;
+        padding: 6px;
+        max-height: 240px;
+        background: #0f172a;
+        border: 2px solid rgba(212, 175, 55, 0.7);
+        border-radius: 14px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.85);
+        /* פקודות שמכריחות את הרשימה להיפתח כלפי מטה תמיד */
+        position-area: block-end span-inline-end;
+        position-try-fallbacks: none;
+        scrollbar-width: thin;
+        scrollbar-color: #d4af37 transparent;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: opacity 0.25s, transform 0.25s, display 0.25s allow-discrete, overlay 0.25s allow-discrete;
+    }
+
+    .search-box-select:open::picker(select) {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+@starting-style {
+    .search-box-select:open::picker(select) {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+}
+
+.search-box-select option {
+    padding: 11px 14px;
+    border-radius: 9px;
+    background: transparent;
+    color: #cbd5e1;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+    .search-box-select option::checkmark {
+        display: none;
+    }
+
+    .search-box-select option:hover,
+    .search-box-select option:focus {
+        background: linear-gradient(90deg, rgba(212,175,55,0.25), rgba(212,175,55,0.08));
+        color: #d4af37;
+    }
+
+    .search-box-select option:checked {
+        background: rgba(212, 175, 55, 0.18);
+        color: #d4af37;
+        font-weight: 700;
+    }
+
+/* כפתור חיפוש טיסות */
+.btn-search {
+    background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+    color: #0b0f19;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1.5px;
+    box-shadow: 0 5px 18px rgba(212, 175, 55, 0.45);
+    transition: transform 0.2s, opacity 0.2s;
+    height: 52px;
+}
+
+    .btn-search:hover {
+        opacity: 0.95;
+        transform: translateY(-2px);
+    }
+
+/* אזור מנהל */
+.admin-area {
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* כפתור פאנל ניהול */
+.btn-admin {
+    background: #1e293b;
+    border: 2px solid #d4af37;
+    color: #d4af37;
+    padding: 12px 26px;
+    border-radius: 14px;
+    font-weight: bold;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: all 0.3s;
+}
+
+    .btn-admin:hover {
+        background: #d4af37;
+        color: #0b0f19;
+    }
