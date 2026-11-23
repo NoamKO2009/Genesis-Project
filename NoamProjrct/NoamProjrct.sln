@@ -1,9 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.11.35303.130
+# Visual Studio Version 18
+VisualStudioVersion = 18.13.12412.241
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NoamProjrct", "NoamProjrct\NoamProjrct.csproj", "{8474F1F8-AC27-4C51-A5BA-C9B447268658}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{6A1C2E3B-4D5F-4A7B-9C8D-1E2F3A4B5C6D}"
+	ProjectSection(SolutionItems) = preProject
+		..\CHANGELOG.md = ..\CHANGELOG.md
+		..\docs\project-flow.md = ..\docs\project-flow.md
+		..\docs\booking-changes.md = ..\docs\booking-changes.md
+		..\docs\exam-qa-1-design.md = ..\docs\exam-qa-1-design.md
+		..\docs\exam-qa-2-code.md = ..\docs\exam-qa-2-code.md
+		..\docs\exam-qa-3-live-changes.md = ..\docs\exam-qa-3-live-changes.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
