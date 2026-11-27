@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{6A1C2E3B-4
 		..\docs\exam-qa-1-design.md = ..\docs\exam-qa-1-design.md
 		..\docs\exam-qa-2-code.md = ..\docs\exam-qa-2-code.md
 		..\docs\exam-qa-3-live-changes.md = ..\docs\exam-qa-3-live-changes.md
+		..\docs\fleet-image-prompts.md = ..\docs\fleet-image-prompts.md
 	EndProjectSection
 EndProject
 Global

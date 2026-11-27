@@ -112,6 +112,26 @@
                 color: #ffffff;
                 background-color: rgba(203, 213, 225, 0.1);
             }
+
+        /* כפתור זהב שמעביר לדף צי החברה */
+        .btn-fleet {
+            background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%);
+            color: #0b0f19;
+            padding: 11px 28px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 17px;
+            text-decoration: none;
+            display: inline-block;
+            margin-left: 12px;
+            box-shadow: 0 5px 18px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s ease;
+        }
+
+            .btn-fleet:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 22px rgba(212, 175, 55, 0.6);
+            }
     </style>
 </head>
 <body>
@@ -132,8 +152,9 @@
                 <p>כל מטוסינו עוצבו בקפידה רבה כדי להעניק לנוסעי היוקרה וה-Elite חוויית טיסה חסרת פשרות, עם מערכות בידור מתקדמות, מחלקות עסקים פרטיות לחלוטין ושקט אבסולוטי בתא הנוסעים.</p>
             </div>
 
-            <!-- כפתור חזרה לדף הבית -->
+            <!-- קישור לדף צי החברה וכפתור חזרה לדף הבית -->
             <div class="footer-nav">
+                <a href="OurFleet.aspx" class="btn-fleet">✈ צי החברה</a>
                 <a href="HomePage.aspx" class="btn-back">← חזרה לדף הבית</a>
             </div>
 

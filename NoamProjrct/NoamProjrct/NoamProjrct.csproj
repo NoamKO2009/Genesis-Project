@@ -79,6 +79,19 @@
     <Content Include="Images\Fleet.jpg" />
     <Content Include="Images\Genesis.jpg" />
     <Content Include="Images\Logo.png" />
+    <Content Include="Images\Fleet\A320.jpg" />
+    <Content Include="Images\Fleet\A321.jpg" />
+    <Content Include="Images\Fleet\A350-900.jpg" />
+    <Content Include="Images\Fleet\A350-1000.jpg" />
+    <Content Include="Images\Fleet\A380-800.jpg" />
+    <Content Include="Images\Fleet\B737-800MAX.jpg" />
+    <Content Include="Images\Fleet\B737-900ER.jpg" />
+    <Content Include="Images\Fleet\B777-200ER.jpg" />
+    <Content Include="Images\Fleet\B777-300ER.jpg" />
+    <Content Include="Images\Fleet\B777X.jpg" />
+    <Content Include="Images\Fleet\B787-8.jpg" />
+    <Content Include="Images\Fleet\B787-9.jpg" />
+    <Content Include="OurFleet.aspx" />
     <Content Include="Insert.aspx" />
     <Content Include="Login.aspx" />
     <Content Include="Styles\HomePage.css" />
@@ -122,6 +135,13 @@
     </Compile>
     <Compile Include="Fleet.aspx.designer.cs">
       <DependentUpon>Fleet.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="OurFleet.aspx.cs">
+      <DependentUpon>OurFleet.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="OurFleet.aspx.designer.cs">
+      <DependentUpon>OurFleet.aspx</DependentUpon>
     </Compile>
     <Compile Include="Flights.aspx.cs">
       <DependentUpon>Flights.aspx</DependentUpon>
